@@ -1,12 +1,12 @@
-import LRUCache from 'lru-cache'
+import { LRUCache } from 'lru-cache'
 
 declare global {
-  var docCache: LRUCache<string, unknown>
+  var docCache: LRUCache<string, {}>
 }
 
 const docCache =
   globalThis.docCache ||
-  (globalThis.docCache = new LRUCache<string, unknown>({
+  (globalThis.docCache = new LRUCache<string, {}>({
     max: 300,
     // ttl: 1,
     ttl: process.env.NODE_ENV === 'production' ? 1 : 1000000,
@@ -23,7 +23,7 @@ export async function fetchCached<T>(opts: {
 
   const result = await opts.fn()
 
-  docCache.set(opts.key, result, {
+  docCache.set(opts.key, result as {}, {
     ttl: opts.ttl,
   })
 
